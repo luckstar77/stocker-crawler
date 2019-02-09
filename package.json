@@ -1,0 +1,28 @@
+{
+  "name": "stocker-crawler",
+  "version": "1.0.0",
+  "description": "docker run -v $PWD:/app -w /app -it alekzonder/puppeteer:latest /bin/bash",
+  "main": "index.js",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.2",
+    "moment": "^2.24.0",
+    "puppeteer": "^1.11.0",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "docker run -i --rm --cap-add=SYS_ADMIN -v $PWD/index.js:/index.js --name puppeteer-chrome puppeteer-chrome-linux node -e \"`cat index.js`\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BrocasArea/Boycas-pk10er.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/BrocasArea/Boycas-pk10er/issues"
+  },
+  "homepage": "https://github.com/BrocasArea/Boycas-pk10er#readme"
+}
