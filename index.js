@@ -1,6 +1,26 @@
 const puppeteer = require('puppeteer');
-var rp = require('request-promise');
-var moment = require('moment');
+const { request } = require('graphql-request');
+
+async function upsertStocks(stocks) {
+  const endpoint = 'http://node:7001/graphql'
+
+  return await Promise.all(stocks.map(async stock => {
+    const query = /* GraphQL */ `
+        mutation {
+            upsertStock(${Object
+            .keys(stock)
+            .map(key => `${key}:${key !== 'symbol' && key !== 'company' ? stock[key] : JSON.stringify(stock[key])}`)
+            .join(",")}) {
+                symbol
+                company
+            }
+        }
+      `;
+    // console.log(query);
+
+    return await request(endpoint, query)
+  }));
+}
 
 (async() => {
     try {
@@ -67,7 +87,11 @@ var moment = require('moment');
             };
         }));
         console.log(stocks);
+
+        let result = await upsertStocks(stocks).catch(error => console.error(error));
         
+        // console.log(result);
+
         browser.close();
     } catch (err) {
         console.error(err);
