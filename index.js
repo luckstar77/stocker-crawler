@@ -86,11 +86,31 @@ async function upsertStocks(stocks) {
                 quickRatioOfLastSeason,
             };
         }));
+
+        stocks = await Promise.all(stocks.map(async stock=>{
+            // await page.goto(`https://stock-ai.com/tw-Dly-8-${stock.symbol}`);
+            // await page.waitFor('.table.table-striped.table-bordered.table-hover', {visible:true});
+            // const dividend = await page.$$eval('.table.table-striped.table-bordered.table-hover', async table=>{
+            //     const dividendTrs = table[2].querySelectorAll("tbody tr");
+            //     const dividendSuccessCount = dividendTrs.reduce((prev, dividend)=>dividend.querySelector("td i").className.includes('fa-thumbs-o-up') ? prev++ : prev, 0);
+            //     return {
+            //         dividendCount: dividendTrs.length,
+            //         dividendSuccessCount,
+            //         dividendSuccessPercent: dividendSuccessCount / dividendTrs.length,
+            //     };
+            // });
+
+            return {
+                ...stock,
+                // ...dividend,
+            }
+        }));
+
         console.log(stocks);
 
         let result = await upsertStocks(stocks).catch(error => console.error(error));
         
-        // console.log(result);
+        console.log(result);
 
         browser.close();
     } catch (err) {
