@@ -1,5 +1,7 @@
 const puppeteer = require('puppeteer');
 const { request } = require('graphql-request');
+const path = require('path');
+var fs = require('fs');
 
 async function upsertStocks(stocks) {
   const endpoint = 'http://node:7001/graphql'
@@ -87,30 +89,87 @@ async function upsertStocks(stocks) {
             };
         }));
 
-        stocks = await Promise.all(stocks.map(async stock=>{
-            // await page.goto(`https://stock-ai.com/tw-Dly-8-${stock.symbol}`);
-            // await page.waitFor('.table.table-striped.table-bordered.table-hover', {visible:true});
-            // const dividend = await page.$$eval('.table.table-striped.table-bordered.table-hover', async table=>{
-            //     const dividendTrs = table[2].querySelectorAll("tbody tr");
-            //     const dividendSuccessCount = dividendTrs.reduce((prev, dividend)=>dividend.querySelector("td i").className.includes('fa-thumbs-o-up') ? prev++ : prev, 0);
-            //     return {
-            //         dividendCount: dividendTrs.length,
-            //         dividendSuccessCount,
-            //         dividendSuccessPercent: dividendSuccessCount / dividendTrs.length,
-            //     };
-            // });
+        let stocksWithDividend = [];
 
-            return {
-                ...stock,
-                // ...dividend,
+        for (let stock of stocks) {
+            console.log(`https://stock-ai.com/tw-Dly-8-${stock.symbol}`);
+            await page.goto(`https://stock-ai.com/tw-Dly-8-${stock.symbol}`);
+            
+            var dir = path.join(process.cwd(), 'screenshots', stock.symbol);
+            if (!fs.existsSync(dir)){
+                fs.mkdirSync(dir);
             }
-        }));
 
-        console.log(stocks);
+            await page.evaluate(() => {
+                window.scrollBy(0, 1000);
+            });
+            await page.waitFor(1000);
+            page.screenshot({
+                path:path.join(dir, '1.png')
+            })
 
-        let result = await upsertStocks(stocks).catch(error => console.error(error));
-        
-        console.log(result);
+            await page.evaluate(() => {
+                window.scrollBy(0, 1000);
+            });
+            await page.waitFor(1000);
+            page.screenshot({
+                path:path.join(dir, '2.png')
+            })
+
+            await page.evaluate(() => {
+                window.scrollBy(0, 1000);
+            });
+            await page.waitFor(1000);
+            page.screenshot({
+                path:path.join(dir, '3.png')
+            })
+
+            await page.evaluate(() => {
+                window.scrollBy(0, 1000);
+            });
+            await page.waitFor(1000);
+            page.screenshot({
+                path:path.join(dir, '4.png')
+            })
+
+            await page.evaluate(() => {
+                window.scrollBy(0, 1000);
+            });
+            await page.waitFor(4000);
+            page.screenshot({
+                path:path.join(dir, '5.png')
+            })
+
+            await page.evaluate(() => {
+                window.scrollBy(0, 1000);
+            });
+            await page.waitFor(4000);
+            page.screenshot({
+                path:path.join(dir, '6.png')
+            })
+            
+            try {
+                const dividends = await page.$$eval('.table.table-striped.table-bordered.table-hover', async table=>{
+                    const dividendTrs = [].slice.call(document.querySelectorAll("table.table.table-striped.table-bordered.table-hover")[2].querySelectorAll("tbody tr"));
+                    const dividendSuccessCount = dividendTrs.reduce((prev, dividend)=>dividend.querySelectorAll("td")[8].innerText !== '0' ? prev + 1 : prev, 0);
+                    // const dividendSuccessCount = dividendTrs.reduce((prev, dividend)=>dividend.querySelectorAll("td")[8].innerText !== '0' ? prev++ : prev, 0);
+                    return {
+                        dividendCount: dividendTrs.length,
+                        dividendSuccessCount,
+                        dividendSuccessPercent: Math.floor(dividendSuccessCount / dividendTrs.length * 100),
+                    };
+                });
+    
+                stocksWithDividend.push({
+                    ...stock,
+                    ...dividends,
+                });
+
+                let result = await upsertStocks(stocksWithDividend).catch(error => console.error(error));
+            } catch (error) {
+                console.error(error)
+            }
+        }
 
         browser.close();
     } catch (err) {
