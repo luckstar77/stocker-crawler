@@ -24,8 +24,25 @@ async function upsertStocks(stocks) {
   }));
 }
 
+async function getStocks() {
+  const endpoint = 'http://node:7001/graphql'
+
+  const query = /* GraphQL */ `
+    query {
+        stocks {
+            symbol
+            company
+            price
+        }
+    }
+    `;
+
+    return await request(endpoint, query);
+}
+
 (async() => {
     try {
+        const { stocks } = await getStocks();
         const browser = await puppeteer.launch({
             args: [
                 '--no-sandbox',
@@ -34,9 +51,7 @@ async function upsertStocks(stocks) {
         });
     
         const page = await browser.newPage();
-        const stock = {
-            symbol: process.argv[2],
-        };
+        const stock = stocks[process.argv[2]]
         let stocksWithDividend = [];
 
         console.log(`https://stock-ai.com/tw-Dly-8-${stock.symbol}`);
@@ -107,6 +122,6 @@ async function upsertStocks(stocks) {
         browser.close();
     } catch (err) {
         console.error(err);
-        return process.exit(1);
     }
+    return process.exit(1);
 })();
