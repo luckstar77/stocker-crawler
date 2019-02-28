@@ -1,6 +1,7 @@
 const puppeteer = require('puppeteer');
 const { request } = require('graphql-request');
 const path = require('path');
+const _ = require('lodash');
 var fs = require('fs');
 
 async function upsertStocks(stocks) {
@@ -33,6 +34,9 @@ async function getStocks() {
             symbol
             company
             price
+            dividendCount
+            dividendSuccessCount
+            dividendSuccessPercent
         }
     }
     `;
@@ -51,11 +55,12 @@ async function getStocks() {
         });
     
         const page = await browser.newPage();
-        const stock = stocks[process.argv[2]]
+        const stock = _.find(stocks, {dividendCount: null});
+        console.log(stock)
         let stocksWithDividend = [];
 
         console.log(`https://stock-ai.com/tw-Dly-8-${stock.symbol}`);
-        await page.goto(`https://stock-ai.com/tw-Dly-8-${stock.symbol}`);
+        await page.goto(`https://stock-ai.com/tw-Dly-8-${stock.symbol}`, {timeout: 0});
         
         // var dir = path.join(process.cwd(), 'screenshots', stock.symbol);
         // if (!fs.existsSync(dir)){
@@ -91,6 +96,41 @@ async function getStocks() {
             window.scrollBy(0, 1000);
         });
         await page.waitFor(4000);
+
+        await page.evaluate(() => {
+            window.scrollBy(0, 1000);
+        });
+        await page.waitFor(4000);
+
+        await page.evaluate(() => {
+            window.scrollBy(0, 1000);
+        });
+        await page.waitFor(4000);
+
+        await page.evaluate(() => {
+            window.scrollBy(0, 1000);
+        });
+        await page.waitFor(4000);
+
+        await page.evaluate(() => {
+            window.scrollBy(0, 1000);
+        });
+        await page.waitFor(4000);
+
+        await page.evaluate(() => {
+            window.scrollBy(0, 1000);
+        });
+        await page.waitFor(4000);
+
+        await page.evaluate(() => {
+            window.scrollBy(0, 1000);
+        });
+        await page.waitFor(4000);
+
+        await page.evaluate(() => {
+            window.scrollBy(0, 1000);
+        });
+        await page.waitFor(4000);
         
         try {
             const dividends = await page.$$eval('.table.table-striped.table-bordered.table-hover', async table=>{
@@ -104,8 +144,15 @@ async function getStocks() {
                 };
             });
 
-            if(!dividends.dividendCount)
+            if(!dividends.dividendCount) {
+                await upsertStocks([{
+                    ...stock,
+                    dividendCount: 0,
+                    dividendSuccessCount: 0,
+                    dividendSuccessPercent: 0,
+                }]).catch(error => console.error(error));
                 throw `No dividend data. ${dividends.toString()}`;
+            }
 
             stocksWithDividend.push({
                 ...stock,

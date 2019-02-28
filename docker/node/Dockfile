@@ -31,6 +31,7 @@ RUN npm i request
 RUN npm i request-promise
 RUN npm i moment
 RUN npm i graphql-request
+RUN npm i lodash
 
 # Add user so we don't need --no-sandbox.
 RUN groupadd -r pptruser && useradd -r -g pptruser -G audio,video pptruser \
