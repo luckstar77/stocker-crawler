@@ -6,9 +6,9 @@ const _ = require('lodash');
 const moment = require('moment');
 var fs = require('fs');
 
-async function upsertStocks(stocks) {
-  const endpoint = 'http://localhost:7001/graphql'
+const endpoint = process.env.GRAPHQL_ENDPOINT || 'http://localhost:7001/graphql'
 
+async function upsertStocks(stocks) {
   return await Promise.all(stocks.map(async stock => {
     stock.dividends = `[${stock.dividends.map(dividend=>`{${Object
         .keys(dividend)
@@ -32,8 +32,6 @@ async function upsertStocks(stocks) {
 }
 
 async function getStocks() {
-  const endpoint = 'http://localhost:7001/graphql'
-
   const query = /* GraphQL */ `
     query {
         stocks {

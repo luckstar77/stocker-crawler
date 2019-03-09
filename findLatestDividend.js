@@ -19,6 +19,8 @@ async function upsertStocks(stocks) {
         }
       `;
 
+      console.log(query)
+
     return await request(endpoint, query)
   }));
 }
@@ -34,19 +36,26 @@ async function upsertStocks(stocks) {
     
         const page = await browser.newPage();
 
-        await page.goto('https://stock.wespai.com/p/51227');
+        await page.goto('https://stock.wespai.com/rate108');
         await page.waitFor('#example tbody tr', {visible:true});
         stocks = await page.$$eval('#example tbody tr', result=>result.map(stock=>{
             const [
                 {innerText:symbol},
                 {innerText:company},
+                {innerText:_1},
+                {innerText:_2},
+                {innerText:_3},
+                {innerText:_5},
                 {innerText:price},
+                {innerText:_4},
+                {innerText:dividend},
             ] = stock.querySelectorAll("td");
 
             return {
                 symbol,
                 company,
                 price,
+                dividend:parseFloat(dividend),
             };
         }));
 

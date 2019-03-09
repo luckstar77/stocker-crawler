@@ -15,3 +15,8 @@ docker run --rm -i --cap-add=SYS_ADMIN -v $PWD/findAllStock.js:/index.js --net=s
 ```
 docker run --rm -i --cap-add=SYS_ADMIN -v $PWD/index.js:/index.js --net=stocker-server_backend --name puppeteer-chrome puppeteer-chrome-linux node -e "`cat index.js`"
 ```
+
+## ENV
+```
+export GRAPHQL_ENDPOINT=$
+```
