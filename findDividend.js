@@ -37,10 +37,6 @@ async function getStocks() {
         stocks {
             symbol
             company
-            price
-            dividendCount
-            dividendSuccessCount
-            dividendSuccessPercent
         }
     }
     `;
@@ -76,6 +72,8 @@ async function getStocks() {
         let dividends = [];
         let dividendCount = DividendTr.length;
         let dividendSuccessCount = 0;
+        let dividendAvg = 0;
+        let dividendSuccessPercent = 0;
         for(i = 0; i < dividendCount; i++) {
             const success = DividendTr.eq(i).find('td').eq(7).find('i').hasClass('fa-thumbs-o-up');
 
@@ -92,14 +90,20 @@ async function getStocks() {
                 pbr: parseFloat(DividendTr.eq(i).find('td').eq(6).text()) || null,
                 success,
                 successDay: parseInt(DividendTr.eq(i).find('td').eq(8).text()),
-            })
+            });
+
+            dividendAvg += dividends[i].yield;
         }
-        let dividendSuccessPercent = Math.floor(dividendSuccessCount / dividendCount * 100);
+        if(dividendCount) {
+            dividendSuccessPercent = Math.floor(dividendSuccessCount / dividendCount * 100);
+            dividendAvg = dividendAvg / dividendCount;
+        }
 
         try {
             stocksWithDividend.push({
                 ...stock,
                 dividends: dividends,
+                dividendAvg,
                 dividendCount,
                 dividendSuccessCount,
                 dividendSuccessPercent,
