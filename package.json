@@ -5,19 +5,21 @@
   "main": "index.js",
   "dependencies": {
     "apollo-boost": "^0.1.27",
-    "cheerio": "^1.0.0-rc.2",
+    "aws-sdk": "^2.507.0",
+    "cheerio": "^1.0.0-rc.3",
     "graphql": "^14.1.1",
     "graphql-request": "^1.8.2",
     "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "moment": "^2.24.0",
     "puppeteer": "^1.11.0",
     "request": "^2.88.0",
-    "request-promise": "^4.2.2"
+    "request-promise": "^4.2.4"
   },
   "devDependencies": {},
   "scripts": {
     "start": "docker run -i --rm --cap-add=SYS_ADMIN -v $PWD/index.js:/index.js --name puppeteer-chrome puppeteer-chrome-linux node -e \"`cat index.js`\"",
+    "findLatestDividendStockFutures": "node findLatestDividendStockFutures.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
