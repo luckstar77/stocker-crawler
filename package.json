@@ -10,7 +10,7 @@
     "graphql": "^14.1.1",
     "graphql-request": "^1.8.2",
     "graphql-tag": "^2.10.1",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.21",
     "moment": "^2.24.0",
     "puppeteer": "^1.11.0",
     "request": "^2.88.0",
